@@ -1,6 +1,6 @@
 # Clasament de Fotbal
 
-Program care imi furnizeaza clasamente si statistici pentru o multidudine de echipe si meciuri dintr-o liga oarecare.
+Programul imi furnizeaza clasamente si statistici pentru o multidudine de echipe si meciuri dintr-o liga oarecare, permitand si sa fie adaugate echipe si meciuri noi.
 
 ### Important!
 Aveți voie cu cod generat de modele de limbaj la care nu ați contribuit semnificativ doar în folder-ul `generated`.
