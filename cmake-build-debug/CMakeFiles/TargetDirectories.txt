@@ -1,0 +1,7 @@
+C:/Users/Filip/Documents/GitHub/oop-template/cmake-build-debug/CMakeFiles/oop.dir
+C:/Users/Filip/Documents/GitHub/oop-template/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Filip/Documents/GitHub/oop-template/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/Filip/Documents/GitHub/oop-template/cmake-build-debug/CMakeFiles/list_install_components.dir
+C:/Users/Filip/Documents/GitHub/oop-template/cmake-build-debug/CMakeFiles/install.dir
+C:/Users/Filip/Documents/GitHub/oop-template/cmake-build-debug/CMakeFiles/install/local.dir
+C:/Users/Filip/Documents/GitHub/oop-template/cmake-build-debug/CMakeFiles/install/strip.dir

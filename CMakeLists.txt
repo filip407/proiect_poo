@@ -49,6 +49,28 @@ include(cmake/Options.cmake)
 add_executable(${MAIN_EXECUTABLE_NAME}
     main.cpp
     generated/src/Helper.cpp
+        Match.h
+        Match.cpp
+        League.h
+        League.cpp
+        TeamBase.h
+        TeamBase.cpp
+        DomesticTeam.h
+        DomesticTeam.cpp
+        InternationalTeam.h
+        InternationalTeam.cpp
+        YouthTeam.h
+        YouthTeam.cpp
+        LeagueException.h
+        FileException.h
+        TeamNotFoundException.h
+        MatchFormatException.h
+        IObserver.h
+        Stadium.h
+        Stadium.cpp
+        PremiumStadium.h
+        PremiumStadium.cpp
+        Statistics.h
 )
 
 include(cmake/CompilerFlags.cmake)
