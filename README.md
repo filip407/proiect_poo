@@ -1,5 +1,7 @@
 # Clasament de Fotbal
 
+Program care imi furnizeaza clasamente si statistici pentru o multidudine de echipe si meciuri dintr-o liga oarecare.
+
 ### Important!
 Aveți voie cu cod generat de modele de limbaj la care nu ați contribuit semnificativ doar în folder-ul `generated`.
 Codul generat pus "ca să fie"/pe care nu îl înțelegeți se punctează doar pentru puncte bonus, doar în contextul
