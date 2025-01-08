@@ -15,7 +15,7 @@
 #include <limits>
 
 League* League::instance = nullptr;
-
+//implementarea Singleton Pattern
 League& League::getInstance() {
     if (instance == nullptr) {
         instance = new League();
@@ -23,12 +23,13 @@ League& League::getInstance() {
     return *instance;
 }
 
-void League::addTeam(std::shared_ptr<TeamBase> team) {
+void League::addTeam(const std::shared_ptr<TeamBase>& team) {
     teams.push_back(team);
+    //Notificam observatorii
     notifyObservers("Echipa noua adaugata: " + team->getName());
 }
 
-//Suprascrierea de operator
+//Suprascrierea de operator de citire
 std::istream& operator>>(std::istream& is, League& league) {
     std::string team1_name, team2_name;
     int goals1, goals2;
@@ -86,8 +87,7 @@ std::map<std::string, League::TeamStatistics> League::calculateTeamStatistics() 
             stats[team2].draws++;
         }
     }
-
-    // Calculam mediile și ratele pentru fiecare echipa
+    // Calculam mediile si ratele pentru fiecare echipa
     for (auto& [teamName, teamStats] : stats) {
         if (teamStats.matchesPlayed > 0) {
             teamStats.averageGoalsScored = static_cast<double>(teamStats.goalsScored) / teamStats.matchesPlayed;
@@ -100,29 +100,33 @@ std::map<std::string, League::TeamStatistics> League::calculateTeamStatistics() 
 
 void League::displayTeamStatistics() const {
     auto stats = calculateTeamStatistics();
-    std::cout << std::string(100, '-') << "\n";
+    std::cout << std::string(120, '-') << "\n";
     std::cout << std::left
               << std::setw(20) << "Echipa"
               << std::setw(10) << "Jucate"
-              << std::setw(15) << "Date"
-              << std::setw(15) << "Incasate"
-              << std::setw(15) << "Avg Goluri"
-              << std::setw(15) << "Rata de castig %"
+              << std::setw(10) << "Date"
+              << std::setw(10) << "Incasate"
+              << std::setw(20) << "Avg Goluri Date"
+              << std::setw(20) << "Avg Goluri Luate"
+              << std::setw(20) << "Rata de castig %"
               << "\n";
-    std::cout << std::string(100, '-') << "\n";
+    std::cout << std::string(120, '-') << "\n";
     for (const auto& [teamName, teamStats] : stats) {
         std::cout << std::left
                   << std::setw(20) << teamName
                   << std::setw(10) << teamStats.matchesPlayed
-                  << std::setw(15) << teamStats.goalsScored
-                  << std::setw(15) << teamStats.goalsConceded
+                  << std::setw(10) << teamStats.goalsScored
+                  << std::setw(10) << teamStats.goalsConceded
                   << std::fixed << std::setprecision(2)
-                  << std::setw(15) << teamStats.averageGoalsScored
-                  << std::setw(15) << teamStats.winRate
+                  << std::setw(20) << teamStats.averageGoalsScored
+                  << std::setw(20) << teamStats.averageGoalsConceded
+                  << std::setw(20) << teamStats.winRate
                   << "\n";
     }
-    std::cout << std::string(100, '-') << "\n";
+    std::cout << std::string(120, '-') << "\n";
 }
+
+//Citirea din fisier
 void League::loadFromFile(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
@@ -190,6 +194,7 @@ void League::loadFromFile(const std::string& filename) {
     file.close();
 }
 
+// Afisarea meciurilor
 void League::displayMatches() const {
     std::cout << "Matches:\n";
     for (const auto& match : matches) {
@@ -296,6 +301,7 @@ void League::addMatch(const std::string& team1_name, const std::string& team2_na
     auto t2 = findTeam(team2_name);
     if (t1 && t2) {
         matches.emplace_back(*t1, *t2, goals1, goals2);
+        //Notificam observatorii
         notifyObservers("Meci adaugat: " + team1_name + " vs " + team2_name);
     } else {
         throw TeamNotFoundException("Una sau ambele echipe nu au fost gasite: " + team1_name + " or " + team2_name);
@@ -312,4 +318,70 @@ std::shared_ptr<TeamBase> League::findTeam(const std::string& name) {
         return *it;
     }
     return nullptr;
+}
+
+void League::removeTeam(const std::string& teamName) {
+    // Gasim si stergem echipa
+    auto it = std::find_if(teams.begin(), teams.end(),
+        [&teamName](const std::shared_ptr<TeamBase>& team) {
+            return team->getName() == teamName;
+        });
+    if (it == teams.end()) {
+        throw TeamNotFoundException("Echipa " + teamName + " nu a fost gasita!");
+    }
+    // Stergem toate meciurile echipei
+    matches.erase(
+        std::remove_if(matches.begin(), matches.end(),
+            [&teamName](const Match& match) {
+                return match.getTeam1().getName() == teamName ||
+                       match.getTeam2().getName() == teamName;
+            }),
+        matches.end());
+    // Stergem stadionul echipei
+    stadiums.erase(teamName);
+    // Stergem echipa
+    teams.erase(it);
+    //Notificam observatorii
+    notifyObservers("Echipa " + teamName + " a fost eliminata din liga");
+    std::cout << "Echipa " << teamName << " a fost eliminata cu succes!\n";
+}
+
+void League::resetSeason() {
+    matches.clear();  // Stergem toate meciurile
+    // Resetam statisticile pentru toate echipele
+    for (auto& team : teams) {
+        team = std::make_shared<DomesticTeam>(team->getName());  // Recream echipa pastrand doar numele
+        team->updateResults(0, 0);  // Resetam rezultatele
+    }
+    // Notificam observatorii
+    notifyObservers("Sezonul a fost resetat");
+    std::cout << "Sezonul a fost resetat cu succes!\n";
+}
+
+void League::removeMatch(size_t index) {
+    if (index >= matches.size()) {
+        throw LeagueException("Index invalid pentru stergerea meciului.");
+    }
+    // Anulam rezultatele pentru ambele echipe
+    Match& match = matches[index];
+    match.getTeam1().reverseResults(match.getGoals1(), match.getGoals2());
+    match.getTeam2().reverseResults(match.getGoals2(), match.getGoals1());
+    // Notificam observatorii
+    notifyObservers("Meci sters: " + match.getTeam1().getName() + " vs " + match.getTeam2().getName());
+    // Stergem meciul din vector
+    matches.erase(matches.begin() + index);
+}
+
+void League::displayMatchesWithIndex() const {
+    std::cout << "Lista meciurilor:\n";
+    for (size_t i = 0; i < matches.size(); ++i) {
+        std::cout << "[" << i << "] " << matches[i];
+        auto stadium = getStadium(matches[i].getTeam1().getName());
+        if (stadium) {
+            std::cout << " at ";
+            stadium->displayStadiumInfo();
+        } else {
+            std::cout << " (Stadion necunoscut)\n";
+        }
+    }
 }

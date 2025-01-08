@@ -22,7 +22,6 @@ class League {
         double winRate = 0.0;
     };
     std::map<std::string, TeamStatistics> calculateTeamStatistics() const;
-    static League* instance;
     std::vector<std::shared_ptr<TeamBase>> teams;
     std::vector<Match> matches;
     std::map<std::string, std::shared_ptr<Stadium>> stadiums;
@@ -31,11 +30,16 @@ class League {
             team->update(message);
         }
     }
+    //instanta unica
+    static League* instance;
+    //constructor privat
     League() = default;
 public:
-    void displayTeamStatistics() const;
+    //prevenirea copierii
     League(const League&) = delete;
+    //prevenirea atribuirii
     League& operator=(const League&) = delete;
+    //metoda statica de acces
     static League& getInstance();
     void loadFromFile(const std::string& filename);
     void addMatch(const std::string& team1_name, const std::string& team2_name, int goals1, int goals2);
@@ -43,9 +47,14 @@ public:
     void displayMatches() const;
     void addStadium(const std::string& teamName, std::shared_ptr<Stadium> stadium);
     std::shared_ptr<Stadium> getStadium(const std::string& teamName) const;
-    void addTeam(std::shared_ptr<TeamBase> team);
+    void addTeam(const std::shared_ptr<TeamBase>& team);
     friend std::istream& operator>>(std::istream& is, League& league);
     std::shared_ptr<TeamBase> findTeam(const std::string& name);
+    void displayTeamStatistics() const;
+    void resetSeason();
+    void removeTeam(const std::string& teamName);
+    void removeMatch(size_t index);
+    void displayMatchesWithIndex() const;
 };
 
 #endif

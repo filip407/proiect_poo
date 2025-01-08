@@ -10,7 +10,7 @@ protected:
 
 public:
     explicit LeagueException(const std::string& msg) : message(msg) {}
-    virtual ~LeagueException() noexcept {}
+    //virtual ~LeagueException() noexcept {}
     const char* what() const noexcept override {
         return message.c_str();
     }

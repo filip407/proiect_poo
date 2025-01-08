@@ -13,18 +13,18 @@ protected:
     int goals_conceded;
 
 public:
-    TeamBase(const TeamBase& other);
     // Operator de atribuire
     TeamBase& operator=(const TeamBase& other);
     void update(const std::string& message) override;
     TeamBase(const std::string& name = "");
-    virtual ~TeamBase() {}
+    virtual ~TeamBase() = default;
     virtual void updateResults(int scored, int conceded);
     virtual void displayTeamType() const = 0;
     std::string getName() const;
     int getPoints() const;
     int getGoalDifference() const;
     friend std::ostream& operator<<(std::ostream& os, const TeamBase& team);
+    void reverseResults(int scored, int conceded);
 };
 
 #endif

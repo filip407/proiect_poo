@@ -31,9 +31,7 @@ void displayStatistics(League& league) {
     goalDiffStat.display();
 }
 
-
 void displayMenu() {
-    //Afisam meniul din terminal
     std::cout << "\n=== Liga de Fotbal - Meniu ===\n";
     std::cout << "1. Afiseaza clasamentul\n";
     std::cout << "2. Afiseaza toate meciurile\n";
@@ -41,13 +39,46 @@ void displayMenu() {
     std::cout << "4. Adauga o echipa noua\n";
     std::cout << "5. Adauga un meci nou\n";
     std::cout << "6. Afiseaza statisticile unei echipe\n";
-    std::cout << "7. Iesire\n";
-    std::cout << "\nAlegeti o optiune (1-7): ";
+    std::cout << "7. Reseteaza sezonul\n";
+    std::cout << "8. Elimina o echipa\n";
+    std::cout << "9. Elimina un meci\n";
+    std::cout << "10. Iesire\n";
+    std::cout << "\nAlegeti o optiune (1-10): ";
 }
+
 
 void clearInputBuffer() {
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+void resetSeason(League& league) {
+    //Resetarea sezonului
+    std::cout << "Sunteti sigur ca doriti sa resetati sezonul? (Y/N): ";
+    char confirm;
+    std::cin >> confirm;
+    clearInputBuffer();
+    if (confirm == 'y' || confirm == 'Y') {
+        league.resetSeason();
+    } else {
+        std::cout << "Resetare anulata.\n";
+    }
+}
+
+void removeTeam(League& league) {
+    //Eliminarea unei echipe
+    std::string teamName;
+    std::cout << "Introduceti numele echipei de eliminat: ";
+    std::getline(std::cin, teamName);
+    std::cout << "Sunteti sigur ca doriti sa eliminati echipa " << teamName << "? (Y/N): ";
+    char confirm;
+    std::cin >> confirm;
+    clearInputBuffer();
+    if (confirm == 'y' || confirm == 'Y') {
+        league.removeTeam(teamName);
+    } else {
+        std::cout << "Eliminare anulata.\n";
+    }
 }
 
 void addNewTeam(League& league) {
@@ -79,11 +110,12 @@ void addNewTeam(League& league) {
             std::cout << "Tip de echipa invalid!\n";
         return;
     }
+    //Adaugarea stadionului
     std::cout << "Introduceti numele stadionului echipei: ";
     std::getline(std::cin, stadiumName);
     std::cout << "Introduceti capacitatea stadionului: ";
     std::cin >> capacity;
-    std::cout << "Are zona VIP? (y/n): ";
+    std::cout << "Are zona VIP? (Y/N): ";
     std::cin >> hasVIP;
     clearInputBuffer();
     std::shared_ptr<Stadium> stadium;
@@ -95,6 +127,19 @@ void addNewTeam(League& league) {
     league.addTeam(newTeam);
     league.addStadium(teamName, stadium);
     std::cout << "Echipa si stadionul au fost adaugate cu succes!\n";
+}
+
+void removeMatch(League& league) {
+    league.displayMatchesWithIndex();
+    std::cout << "\nIntroduceti indexul meciului de sters: ";
+    size_t index;
+    if (!(std::cin >> index)) {
+        clearInputBuffer();
+        throw LeagueException("Index invalid.");
+    }
+    clearInputBuffer();
+    league.removeMatch(index);
+    std::cout << "Meciul a fost sters cu succes!\n";
 }
 
 void handleUserChoice(League& league) {
@@ -137,6 +182,18 @@ void handleUserChoice(League& league) {
                 displayStatistics(league);
                 break;
                 case 7:
+                    std::cout << "=== Resetare Sezon ===\n";
+                resetSeason(league);
+                break;
+                case 8:
+                    std::cout << "=== Elimina Echipa ===\n";
+                removeTeam(league);
+                break;
+                case 9:
+                    std::cout << "=== Elimina Meci ===\n";
+                removeMatch(league);
+                break;
+                case 10:
                     std::cout << "La revedere!\n";
                 return;
                 default:
